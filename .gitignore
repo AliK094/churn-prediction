@@ -1,0 +1,64 @@
+# ------------------------------------------------------------------
+# 1. Operating System and Editor Files (OS, IDE, Config)
+# ------------------------------------------------------------------
+.DS_Store
+.vscode/
+
+# ------------------------------------------------------------------
+# 2. Python Environment and Dependency Files
+# ------------------------------------------------------------------
+# Virtual environment directories
+.venv/
+venv/
+env/
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.eggs/
+
+# Installer logs
+pip-log.txt
+pip-delete-this-file.txt
+
+# ------------------------------------------------------------------
+# 3. Data Storage (Data that should NOT be versioned)
+# ------------------------------------------------------------------
+# Raw data files (usually too large for Git)
+/data/raw/
+/data/interim/
+/data/processed/
+
+# Intermediate and processed data
+*.csv
+*.parquet
+*.feather
+*.json
+*.txt
+*.zip
+
+# ------------------------------------------------------------------
+# 4. Machine Learning Artifacts (Models and Logs)
+# ------------------------------------------------------------------
+# Trained model files (can be large)
+/models/
+*.pkl
+*.joblib
+*.h5
+*.hd5
+*.bin
+*.model
+*.pth
+
+# ------------------------------------------------------------------
+# 5. Notebook Files
+# ------------------------------------------------------------------
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+/notebook/
+
+uv.lock
+
+/build/
