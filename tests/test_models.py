@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 
 from churn_prediction.features.build_features import FeatureBuilder, FeatureConfig
-from churn_prediction.models.train import ModelConfig, train_xgb
+from churn_prediction.models.train import ModelConfig, train_xgb, ChurnModelTrainer
 from churn_prediction.models.predict import PredictionConfig, ChurnPredictor
 
 
@@ -113,5 +113,4 @@ def test_trainer_and_predictor_end_to_end(tmp_path):
     assert len(preds_df) == len(X)
     assert "churn_score" in preds_df.columns
     assert "churn_pred" in preds_df.columns
-
 

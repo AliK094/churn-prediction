@@ -1,9 +1,14 @@
 from dataclasses import dataclass
-from typing import Dict
+from pathlib import Path
+from typing import Dict, Optional
 
+import joblib
 import numpy as np
+import pandas as pd
 from xgboost import XGBClassifier
 from sklearn.metrics import f1_score, roc_auc_score, average_precision_score
+
+from churn_prediction.features.build_features import FeatureBuilder, FeatureConfig
 
 
 @dataclass
@@ -19,6 +24,10 @@ class ModelConfig:
     n_jobs: int = -1
     early_stopping_rounds: int = 50
     random_state: int = 0
+
+
+# Backwards-compatible alias used by the training pipeline.
+XGBoostConfig = ModelConfig
 
 
 def train_xgb(
@@ -88,3 +97,46 @@ def find_best_threshold(
             best_t = t
 
     return best_t, best_score
+
+
+class ChurnModelTrainer:
+    """
+    Lightweight trainer used in tests to fit a FeatureBuilder
+    and XGBoost model, then save them to disk.
+    """
+
+    def __init__(self, feature_config: FeatureConfig, model_config: ModelConfig):
+        self.feature_config = feature_config
+        self.model_config = model_config
+        self.feature_builder = FeatureBuilder(feature_config)
+        self.model: Optional[XGBClassifier] = None
+
+    def fit(self, X: pd.DataFrame, y) -> None:
+        n = len(X)
+        if n == 0:
+            raise ValueError("Cannot train on empty dataset.")
+
+        split_idx = max(1, int(0.8 * n))
+        X_train, X_val = X.iloc[:split_idx], X.iloc[split_idx:]
+        y_train, y_val = y.iloc[:split_idx], y.iloc[split_idx:]
+
+        X_train_proc = self.feature_builder.fit_transform(X_train)
+        X_val_proc = self.feature_builder.transform(X_val) if len(X_val) > 0 else X_train_proc
+
+        self.model = train_xgb(
+            X_train_proc,
+            y_train,
+            X_val_proc,
+            y_val if len(X_val) > 0 else y_train,
+            self.model_config,
+        )
+
+    def save(self, model_path: Path, pipeline_path: Path) -> None:
+        if self.model is None:
+            raise RuntimeError("Model not trained. Call `fit` first.")
+
+        pipeline_path.parent.mkdir(parents=True, exist_ok=True)
+        model_path.parent.mkdir(parents=True, exist_ok=True)
+
+        joblib.dump(self.model, model_path)
+        self.feature_builder.save(pipeline_path)
