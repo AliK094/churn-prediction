@@ -7,7 +7,7 @@ from sklearn.metrics import f1_score, roc_auc_score, average_precision_score
 
 
 @dataclass
-class XGBoostConfig:
+class ModelConfig:
     n_estimators: int = 400
     learning_rate: float = 0.05
     max_depth: int = 4
@@ -25,7 +25,7 @@ def train_xgb(
     y_train,
     X_val: np.ndarray,
     y_val,
-    cfg: XGBoostConfig,
+    cfg: ModelConfig,
 ) -> XGBClassifier:
     model = XGBClassifier(
         n_estimators=cfg.n_estimators,

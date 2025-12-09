@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 
 from churn_prediction.features.build_features import FeatureBuilder, FeatureConfig
-from churn_prediction.models.train import ModelConfig, ChurnModelTrainer
+from churn_prediction.models.train import ModelConfig, train_xgb
 from churn_prediction.models.predict import PredictionConfig, ChurnPredictor
 
 
