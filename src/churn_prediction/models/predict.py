@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Union, Optional
 
@@ -23,7 +23,9 @@ class PredictionConfig:
     """
     model_path: Path
     feature_pipeline_path: Path
-    feature_config: FeatureConfig = DEFAULT_TELCO_FEATURE_CONFIG
+    feature_config: FeatureConfig = field(
+        default_factory=lambda: DEFAULT_TELCO_FEATURE_CONFIG
+    )
     threshold: float = 0.50
 
 
@@ -106,7 +108,7 @@ class ChurnPredictor:
 
         return pd.DataFrame(
             {
-                "churn_proba": proba,
+                "churn_score": proba,
                 "churn_pred": labels,
             },
             index=df.index,
