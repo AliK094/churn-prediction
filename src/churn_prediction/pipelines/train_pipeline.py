@@ -3,6 +3,7 @@ from pathlib import Path
 from typing import Any, Dict
 
 import joblib
+import json
 
 from churn_prediction.data.load_data import DataConfig, TrainingDataLoader
 from churn_prediction.features.build_features import (
@@ -62,6 +63,16 @@ def run_training_pipeline(config: TrainingConfig) -> Dict[str, Any]:
     config.model_output_path.parent.mkdir(parents=True, exist_ok=True)
     joblib.dump(model, config.model_output_path)
 
+    metadata = {
+        "model_type": "xgboost_native",
+        "val_metrics": val_metrics,
+        "test_metrics": test_metrics,
+        "best_threshold": float(best_threshold),
+    }
+    meta_path = config.model_output_path.with_suffix(".meta.json")
+    with meta_path.open("w") as f:
+        json.dump(metadata, f, indent=2)
+
     print("Validation metrics:", val_metrics)
     print("Test metrics:", test_metrics)
 
@@ -71,4 +82,5 @@ def run_training_pipeline(config: TrainingConfig) -> Dict[str, Any]:
         "model_path": str(config.model_output_path),
         "feature_pipeline_path": str(config.feature_pipeline_output_path),
         "best_threshold": float(best_threshold),
+        "metadata_path": str(meta_path),
     }
