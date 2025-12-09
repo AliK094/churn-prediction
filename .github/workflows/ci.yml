@@ -22,7 +22,6 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          # Install your package + dev dependencies from pyproject.toml
           pip install -e ".[dev]"
 
       - name: Run tests
