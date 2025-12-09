@@ -18,6 +18,7 @@ class ModelConfig:
     min_child_weight: float = 1.0
     n_jobs: int = -1
     early_stopping_rounds: int = 50
+    random_state: int = 0
 
 
 def train_xgb(
@@ -40,7 +41,8 @@ def train_xgb(
         objective="binary:logistic",
         eval_metric="logloss",
         tree_method="hist",
-        early_stopping_rounds=cfg.early_stopping_rounds
+        early_stopping_rounds=cfg.early_stopping_rounds,
+        random_state=cfg.random_state,
     )
 
     model.fit(

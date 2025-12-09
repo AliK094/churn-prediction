@@ -84,7 +84,8 @@ class DataDriftDetector:
         if len(expected) == 0 or len(actual) == 0:
             return 0.0
 
-        # Use quantile-based bins from expected
+        # Use quantile-based bins from expected, then
+        # expand the outer edges to cover both expected + actual ranges.
         quantiles = np.linspace(0, 1, buckets + 1)
         bin_edges = np.quantile(expected, quantiles)
 
@@ -93,11 +94,22 @@ class DataDriftDetector:
         if len(bin_edges) <= 2:
             return 0.0
 
+        # Expand edges so all values fall inside the histogram range
+        min_val = min(expected.min(), actual.min())
+        max_val = max(expected.max(), actual.max())
+        bin_edges[0] = min_val
+        bin_edges[-1] = max_val
+
         expected_counts, _ = np.histogram(expected, bins=bin_edges)
         actual_counts, _ = np.histogram(actual, bins=bin_edges)
 
-        expected_perc = expected_counts / expected_counts.sum()
-        actual_perc = actual_counts / actual_counts.sum()
+        expected_total = expected_counts.sum()
+        actual_total = actual_counts.sum()
+        if expected_total == 0 or actual_total == 0:
+            return 0.0
+
+        expected_perc = expected_counts / expected_total
+        actual_perc = actual_counts / actual_total
 
         # Avoid zeros
         epsilon = 1e-6
